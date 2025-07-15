@@ -1,146 +1,307 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CoreScanner;
+using SkiaSharp;
+using System;
 using System.Diagnostics;
-using System.Windows.Forms;
+using System.Drawing;
 using System.IO;
-using Tesseract;
-//using IronOcr;
+using System.Windows.Forms;
+using System.Xml;
 
-using CoreScanner;
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
         static CCoreScannerClass cCoreScannerClass;
+        static ProcessStartInfo processStartInfo = new ProcessStartInfo()
+        {
+            FileName = @"C:\Users\ruanj5\AppData\Local\Programs\Python\Python313\python.exe",
+            Arguments = @"C:\Users\ruanj5\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\eocrsetup.py",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        static Process python = null;
+
         public Form1()
         {
             InitializeComponent();
-            button1.Click += new EventHandler(click);
+            scriptStatusButton.Click += new EventHandler(pythonProcessStatus);
+            button3.Click += new EventHandler(StartOcrProcessIfNeeded);
+            enableBarcodeModeButton.Click += new EventHandler(enableBarcodeMode);
+            enablePhotoModeButton.Click += new EventHandler(enablePhotoMode);
+            portNumberLabel.Font = new Font(portNumberLabel.Font, FontStyle.Bold);
+
         }
-        private void click(object sender, EventArgs e)
+        private void enableBarcodeMode(object sender, EventArgs e)
         {
             try
             {
-                // Instantiate CoreScanner Class
-     
                 cCoreScannerClass = new CCoreScannerClass();
 
-                // Call Open API
-                short[] scannerTypes = new short[1];    
-                scannerTypes[0] = 1;                  
-                short numberOfScannerTypes = 1;          
-                int status;                             
-                short numberOfScanners;                         
-                int[] connectedScannerIDList = new int[255];     
-                string outXMl;                                  
-             
-                cCoreScannerClass.Open(0, scannerTypes, numberOfScannerTypes, out status);
-                cCoreScannerClass.GetScanners(out numberOfScanners, connectedScannerIDList, out outXMl, out status);
-        
-                int opcode = 1001;  // Method for Subscribe events 
+                short[] scannerTypes = new short[1];
+                scannerTypes[0] = 1;
+                int status;
                 string outXML;
-                string inXML = "<inArgs>" +
-                                    "<cmdArgs>" +
-                                        "<arg-int>1</arg-int>" + 
-                                        "<arg-int>2</arg-int>" + 
-                                    "</cmdArgs>" +
-                                "</inArgs>";
+                string inXML;
 
-                cCoreScannerClass.ExecCommand(opcode, ref inXML, out outXML, out status);
-                cCoreScannerClass.ImageEvent += new _ICoreScannerEvents_ImageEventEventHandler(OnImageEvent);
-        
+
+
+                cCoreScannerClass.Open(0, scannerTypes, 1, out status);
+
+                if (status != 0)
+                {
+                    MessageBox.Show("CoreScanner API: Open Failed");
+                    return;
+                }
+
+                // Registers for image events
+                inXML = "<inArgs>" +
+                                   "<cmdArgs>" +
+                                       "<arg-int>1</arg-int>" +
+                                       "<arg-int>1</arg-int>" +
+                                   "</cmdArgs>" +
+                       "</inArgs>";
+
+                cCoreScannerClass.ExecCommand(1001, ref inXML, out outXML, out status);
+                cCoreScannerClass.BarcodeEvent += new _ICoreScannerEvents_BarcodeEventEventHandler(OnBarcodeEvent);
+
+                inXML = "<inArgs>" +
+                                  "<scannerID>1</scannerID>" +
+                      "</inArgs>";
+                cCoreScannerClass.ExecCommand(3500, ref inXML, out outXML, out status);
+
+                if (status != 0)
+                {
+                    MessageBox.Show("CoreScanner API: Enable Barcode Mode Failed");
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("CoreScanner API: Barcode Mode enabled.");
+                }
             }
             catch (Exception exp)
             {
-                Console.WriteLine("Something wrong please check... " + exp.Message);
+                MessageBox.Show("Error: " + exp.Message);
             }
-
         }
 
-        private static void OnImageEvent(short eventType, int size, short imageFormat, ref object pimageData, ref string pscanData)
+        private void enablePhotoMode(object sender, EventArgs e)
         {
-            MessageBox.Show("running ocr");
-            byte[] byteArray = pimageData as byte[];
-            MemoryStream ms = new MemoryStream(byteArray);
-            Image i = Image.FromStream(ms);
-            i.Save("temp.png");
-
-
-            string pythonPath = "C:/Users/ruanj5/AppData/Local/Microsoft/WindowsApps/python.exe";
-            string scriptPath = "C:/Users/ruanj5/OneDrive - Baxter/Desktop/ocr_project/eocr.py";
-
-
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = pythonPath,
-                Arguments = scriptPath,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = true,
-                CreateNoWindow = true
-            };
-
             try
             {
-                using (Process process = Process.Start(psi))
+                cCoreScannerClass = new CCoreScannerClass();
+
+                short[] scannerTypes = new short[1];
+                scannerTypes[0] = 1;
+                int status;
+                string outXML;
+                string inXML;
+
+
+               
+                cCoreScannerClass.Open(0, scannerTypes, 1, out status);
+
+                if (status != 0)
                 {
-                    // Read the output
-                    string output = process.StandardOutput.ReadToEnd();
-                    string errors = process.StandardError.ReadToEnd();
+                    MessageBox.Show("CoreScanner API: Open Failed");
+                    return;
+                }
 
-                    process.WaitForExit();
+                // Registers for image events
+                inXML = "<inArgs>" +
+                                   "<cmdArgs>" +
+                                       "<arg-int>1</arg-int>" +
+                                       "<arg-int>2</arg-int>" +
+                                   "</cmdArgs>" +
+                       "</inArgs>";
 
-                    // Display results
-                    MessageBox.Show("Output:\n" + output);
-                    if (!string.IsNullOrEmpty(errors))
-                    {
-                        Console.WriteLine("Errors:\n" + errors);
-                    }
+                cCoreScannerClass.ExecCommand(1001, ref inXML, out outXML, out status); 
+                cCoreScannerClass.ImageEvent += new _ICoreScannerEvents_ImageEventEventHandler(OnImageEvent);
+
+                inXML = "<inArgs>" +
+                                  "<scannerID>1</scannerID>" +
+                      "</inArgs>";
+                cCoreScannerClass.ExecCommand(3000, ref inXML, out outXML, out status);
+
+                if (status != 0)
+                {
+                    MessageBox.Show("CoreScanner API: Enable Photo Mode Failed");
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("CoreScanner API: Photo mode enabled.");
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show("Error: " + exp.Message);
+            }
+        }
+  
+        private void StartOcrProcessIfNeeded(object sender, EventArgs e)
+        {
+            if (python == null || python.HasExited)
+            {
+                python = new Process();
+                python.StartInfo = processStartInfo;
+                python.EnableRaisingEvents = true;
+                python.OutputDataReceived += Process_OutputDataReceived;
+                python.Start();
+                python.BeginOutputReadLine(); // Start async read
+            }
+        }
+
+        private void pythonProcessStatus(object sender, EventArgs e)
+        {
+            if (python != null && !python.HasExited)
+            {
+                MessageBox.Show("OCR process is running.");
+            }
+            else
+            {
+                MessageBox.Show("OCR process is not running.");
+            }
+        }
+
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            
+            var form = Application.OpenForms[0] as Form1;
+            if (form != null)
+            {
+               
+            }
+            char a = ' ';
+            char b = ' ';
+            char c = ' ';
+            if (!string.IsNullOrWhiteSpace(e.Data))
+            {
+                MessageBox.Show("Python Output: " + e.Data);
+            }
+            if (e.Data != null && e.Data.Length >= 3)
+            {
+                string result = e.Data.ToUpper();
+                a = result[0];
+                b = result[1];
+                c = result[2];
+            }
+            
+           
+            
+            if (a == 'L' && b == 'O' && c == 'T' && e.Data.Length > 3)
+            {
+                form.BeginInvoke((Action)(() =>
+                {
+                    form.textBox1.Text = e.Data.Substring(4); 
+                }));
+            }
+            if (a == 'E' && b == 'X' && c == 'P' && e.Data.Length > 3)
+            {
+                form.BeginInvoke((Action)(() =>
+                {
+                    form.textBox2.Text = e.Data.Substring(4); 
+                }));
+            }
+        }
+        private string HexToAscii(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex))
+                return string.Empty;
+
+            var sb = new System.Text.StringBuilder();
+            var tokens = hex.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var token in tokens)
+            {
+                string cleanToken = token.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                    ? token.Substring(2)
+                    : token;
+                if (byte.TryParse(cleanToken, System.Globalization.NumberStyles.HexNumber, null, out byte value))
+                {
+                    sb.Append((char)value);
+                }
+            }
+            return sb.ToString();
+        }
+
+        private void OnBarcodeEvent(short eventType, ref string pscanData)
+        {
+            string barcodeValue = "";
+            var form = Application.OpenForms[0] as Form1;
+            try
+            {
+                var doc = new XmlDocument();
+                doc.LoadXml(pscanData);
+
+
+                var dataLabelNode = doc.SelectSingleNode("//datalabel");
+                if (dataLabelNode != null && !string.IsNullOrWhiteSpace(dataLabelNode.InnerText))
+                {
+                    barcodeValue = HexToAscii(dataLabelNode.InnerText);
+                }
+                else
+                {
+                    barcodeValue = pscanData; 
+                }
+
+            }
+            catch
+            {
+                barcodeValue = pscanData; 
+            }
+            form.BeginInvoke((Action)(() =>
+            {
+                form.textBox1.Text = barcodeValue.Substring(26);
+            }));
+            MessageBox.Show("Barcode: " + barcodeValue);
+
+        }   
+        private void OnImageEvent(short eventType, int size, short imageFormat, ref object pimageData, ref string pscanData)
+        { 
+            MessageBox.Show("Image Event Triggered");
+            if (python != null && !python.HasExited)
+            {
+                MessageBox.Show("OCR process is running.");
+            }
+            else
+            {
+                MessageBox.Show("OCR process is not running.");
+            }
+            
+            byte[] byteArray = pimageData as byte[];
+
+            blurring blur = new blurring();
+            thresholding thresh = new thresholding();
+
+
+            SKBitmap inputBitmap;
+            using (var ms = new MemoryStream(byteArray))
+            {
+                inputBitmap = SKBitmap.Decode(ms);
+            }
+            SKBitmap contrastEnhancedImage = thresh.EnhanceContrast(inputBitmap, 1.2f);
+            SaveImage(contrastEnhancedImage, "ocr6.png");
+            try
+            {
+                if (cCoreScannerClass != null)
+                {
+                    short[] scannerTypes = new short[1];
+                    scannerTypes[0] = 1;
+                    int status;
+                    string outXML;
+                    string inXML = "<inArgs>" +
+                                       "<scannerID>1</scannerID>" +
+                                   "</inArgs>";
+                    cCoreScannerClass.ExecCommand(3000, ref inXML, out outXML, out status);
+                    // Optionally check status and log or show a message if needed
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred: " + ex.Message);
-            }
-
-            //IronOcr.License.LicenseKey = "IRONSUITE.JADEN.N.RUAN.GMAIL.COM.29711-5995088002-DZDO5-XKFVA5ZL6437-VGBWXMZHJN2W-QF2XQW5IDONY-UY4JVRBHFWMJ-7D46L2HP5KXV-NG5G3WUWSMVJ-DCAEDR-TPWVCHFA33OPUA-DEPLOYMENT.TRIAL-JZJJFR.TRIAL.EXPIRES.31.JUL.2025";
-            /*
-             var ocr = new IronTesseract();
-             using (OcrInput input = new OcrInput())
-             {
-                 input.LoadImage("./temp2.png");
-
-
-                 input.Contrast();
-                 var result = ocr.Read(input);
-
-                 MessageBox.Show("finished ocr");
-                 MessageBox.Show(result.Text);
-                 MessageBox.Show("finished ocr");
-
-
-             }*/
-        }
-        /*
-        static SKBitmap LoadImage(string path)
-        {
-            if (!System.IO.File.Exists(path))
-            {
-                return null;
-            }
-
-            using (var stream = new SKFileStream(path))
-            {
-                return SKBitmap.Decode(stream);
+                MessageBox.Show("Failed to re-enable photo mode: " + ex.Message);
             }
         }
-
         static void SaveImage(SKBitmap bitmap, string path)
         {
             using (var image = SKImage.FromBitmap(bitmap))
@@ -150,7 +311,7 @@ namespace WindowsFormsApp1
                 data.SaveTo(stream);
             }
         }
-        */
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
