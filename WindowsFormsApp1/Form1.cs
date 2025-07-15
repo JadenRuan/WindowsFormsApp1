@@ -264,7 +264,10 @@ namespace WindowsFormsApp1
                 inputBitmap = SKBitmap.Decode(ms);
             }
             SKBitmap contrastEnhancedImage = thresh.EnhanceContrast(inputBitmap, 1.2f);
-            SaveImage(contrastEnhancedImage, "image_for_ocr.png");
+
+
+            SaveImage(contrastEnhancedImage, "image_to_ocr.png");
+
             try
             {
                 if (cCoreScannerClass != null)
@@ -305,6 +308,25 @@ namespace WindowsFormsApp1
                 cCoreScannerClass.Close(0, out status); // If available
    
               
+            }
+
+            if (python != null && !python.HasExited)
+            {
+                python.Kill();
+                python.Dispose();
+                python = null;
+            }
+        }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            int status = 0;
+            base.OnFormClosing(e);
+
+            if (cCoreScannerClass != null)
+            {
+                cCoreScannerClass.Close(0, out status); // If available
+
+
             }
 
             if (python != null && !python.HasExited)
