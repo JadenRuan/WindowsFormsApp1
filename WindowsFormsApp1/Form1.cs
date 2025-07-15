@@ -316,5 +316,24 @@ namespace WindowsFormsApp1
         {
 
         }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            int status = 0;
+            base.OnFormClosing(e);
+
+            if (cCoreScannerClass != null)
+            {
+                cCoreScannerClass.Close(0, out status); // If available
+
+
+            }
+
+            if (python != null && !python.HasExited)
+            {
+                python.Kill();
+                python.Dispose();
+                python = null;
+            }
+        }
     }
 }
