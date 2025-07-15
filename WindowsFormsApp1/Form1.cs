@@ -281,7 +281,7 @@ namespace WindowsFormsApp1
                 inputBitmap = SKBitmap.Decode(ms);
             }
             SKBitmap contrastEnhancedImage = thresh.EnhanceContrast(inputBitmap, 1.2f);
-            SaveImage(contrastEnhancedImage, "ocr6.png");
+            SaveImage(contrastEnhancedImage, "image_to_ocr.png");
             try
             {
                 if (cCoreScannerClass != null)
