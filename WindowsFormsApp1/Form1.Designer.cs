@@ -44,8 +44,6 @@ namespace WindowsFormsApp1
             this.button3 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.enableBarcodeModeButton = new System.Windows.Forms.Button();
-            this.enablePhotoModeButton = new System.Windows.Forms.Button();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.portNumberLabel = new System.Windows.Forms.Label();
             this.syringeInletLabel = new System.Windows.Forms.Label();
@@ -78,7 +76,6 @@ namespace WindowsFormsApp1
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(617, 22);
             this.textBox1.TabIndex = 1;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2
             // 
@@ -174,7 +171,7 @@ namespace WindowsFormsApp1
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(129, 292);
+            this.pictureBox1.Location = new System.Drawing.Point(127, 374);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(82, 54);
             this.pictureBox1.TabIndex = 10;
@@ -182,29 +179,11 @@ namespace WindowsFormsApp1
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(35, 292);
+            this.pictureBox2.Location = new System.Drawing.Point(24, 374);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(78, 54);
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
-            // 
-            // enableBarcodeModeButton
-            // 
-            this.enableBarcodeModeButton.Location = new System.Drawing.Point(37, 365);
-            this.enableBarcodeModeButton.Name = "enableBarcodeModeButton";
-            this.enableBarcodeModeButton.Size = new System.Drawing.Size(76, 44);
-            this.enableBarcodeModeButton.TabIndex = 12;
-            this.enableBarcodeModeButton.Text = "Barcode Mode";
-            this.enableBarcodeModeButton.UseVisualStyleBackColor = true;
-            // 
-            // enablePhotoModeButton
-            // 
-            this.enablePhotoModeButton.Location = new System.Drawing.Point(132, 365);
-            this.enablePhotoModeButton.Name = "enablePhotoModeButton";
-            this.enablePhotoModeButton.Size = new System.Drawing.Size(79, 44);
-            this.enablePhotoModeButton.TabIndex = 13;
-            this.enablePhotoModeButton.Text = "Photo Mode";
-            this.enablePhotoModeButton.UseVisualStyleBackColor = true;
             // 
             // textBox3
             // 
@@ -250,8 +229,6 @@ namespace WindowsFormsApp1
             this.Controls.Add(this.syringeInletLabel);
             this.Controls.Add(this.portNumberLabel);
             this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.enablePhotoModeButton);
-            this.Controls.Add(this.enableBarcodeModeButton);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.button3);
@@ -290,8 +267,6 @@ namespace WindowsFormsApp1
         private Button button3;
         private PictureBox pictureBox1;
         private PictureBox pictureBox2;
-        private Button enableBarcodeModeButton;
-        private Button enablePhotoModeButton;
         private TextBox textBox3;
         private Label portNumberLabel;
         private Label syringeInletLabel;

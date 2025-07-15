@@ -1,4 +1,5 @@
 ﻿using CoreScanner;
+using SixLabors.ImageSharp;
 using SkiaSharp;
 using System;
 using System.Diagnostics;
@@ -24,14 +25,22 @@ namespace WindowsFormsApp1
 
         public Form1()
         {
+            // this.FormClosed += OnFormClosing();
             InitializeComponent();
             scriptStatusButton.Click += new EventHandler(pythonProcessStatus);
             button3.Click += new EventHandler(StartOcrProcessIfNeeded);
-            enableBarcodeModeButton.Click += new EventHandler(enableBarcodeMode);
-            enablePhotoModeButton.Click += new EventHandler(enablePhotoMode);
             portNumberLabel.Font = new Font(portNumberLabel.Font, FontStyle.Bold);
+            pictureBox1.Image = System.Drawing.Image.FromFile(@"C:\Users\ruanj5\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\cameraLogo.png");
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.Cursor = Cursors.Hand;
+            pictureBox1.Click += enablePhotoMode;
 
+            pictureBox2.Image = System.Drawing.Image.FromFile(@"C:\Users\ruanj5\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\qrCode.jpg");
+            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox2.Cursor = Cursors.Hand;
+            pictureBox2.Click += enableBarcodeMode;
         }
+      
         private void enableBarcodeMode(object sender, EventArgs e)
         {
             try
@@ -126,12 +135,12 @@ namespace WindowsFormsApp1
 
                 if (status != 0)
                 {
-                    MessageBox.Show("CoreScanner API: Enable Photo Mode Failed");
+                    MessageBox.Show("Enable Photo Mode Failed");
                     return;
                 }
                 else
                 {
-                    MessageBox.Show("CoreScanner API: Photo mode enabled.");
+                    MessageBox.Show("Photo mode enabled.");
                 }
             }
             catch (Exception exp)
@@ -194,7 +203,10 @@ namespace WindowsFormsApp1
             {
                 form.BeginInvoke((Action)(() =>
                 {
-                    form.textBox1.Text = e.Data.Substring(4); 
+                    if (string.IsNullOrEmpty(form.textBox1.Text))
+                    {
+                        form.textBox1.Text = e.Data.Substring(4);
+                    } 
                 }));
             }
             if (a == 'E' && b == 'X' && c == 'P' && e.Data.Length > 3)
@@ -312,10 +324,6 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             int status = 0;
@@ -323,7 +331,7 @@ namespace WindowsFormsApp1
 
             if (cCoreScannerClass != null)
             {
-                cCoreScannerClass.Close(0, out status); // If available
+                cCoreScannerClass.Close(0, out status); 
 
 
             }
