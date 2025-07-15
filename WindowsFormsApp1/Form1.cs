@@ -99,6 +99,15 @@ namespace WindowsFormsApp1
         {
             try
             {
+                if (python == null || python.HasExited)
+                {
+                    python = new Process();
+                    python.StartInfo = processStartInfo;
+                    python.EnableRaisingEvents = true;
+                    python.OutputDataReceived += Process_OutputDataReceived;
+                    python.Start();
+                    python.BeginOutputReadLine(); // Start async read
+                }
                 cCoreScannerClass = new CCoreScannerClass();
 
                 short[] scannerTypes = new short[1];
@@ -187,7 +196,7 @@ namespace WindowsFormsApp1
             char c = ' ';
             if (!string.IsNullOrWhiteSpace(e.Data))
             {
-                MessageBox.Show("Python Output: " + e.Data);
+                //MessageBox.Show("Python Output: " + e.Data);
             }
             if (e.Data != null && e.Data.Length >= 3)
             {
@@ -271,6 +280,7 @@ namespace WindowsFormsApp1
         }   
         private void OnImageEvent(short eventType, int size, short imageFormat, ref object pimageData, ref string pscanData)
         { 
+            /*
             MessageBox.Show("Image Event Triggered");
             if (python != null && !python.HasExited)
             {
@@ -279,7 +289,7 @@ namespace WindowsFormsApp1
             else
             {
                 MessageBox.Show("OCR process is not running.");
-            }
+            }*/
             
             byte[] byteArray = pimageData as byte[];
 
