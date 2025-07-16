@@ -27,8 +27,8 @@ namespace WindowsFormsApp1
         {
             // this.FormClosed += OnFormClosing();
             InitializeComponent();
-            scriptStatusButton.Click += new EventHandler(pythonProcessStatus);
-            button3.Click += new EventHandler(StartOcrProcessIfNeeded);
+            //scriptStatusButton.Click += new EventHandler(pythonProcessStatus);
+            //button3.Click += new EventHandler(StartOcrProcessIfNeeded);
             portNumberLabel.Font = new Font(portNumberLabel.Font, FontStyle.Bold);
             pictureBox1.Image = System.Drawing.Image.FromFile(@"C:\Users\ruanj5\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\cameraLogo.png");
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;

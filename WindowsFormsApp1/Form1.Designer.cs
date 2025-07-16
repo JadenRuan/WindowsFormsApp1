@@ -40,8 +40,6 @@ namespace WindowsFormsApp1
             this.RemainderLabel = new System.Windows.Forms.Label();
             this.LotNumberLabel = new System.Windows.Forms.Label();
             this.ExprLabel = new System.Windows.Forms.Label();
-            this.scriptStatusButton = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
@@ -151,24 +149,6 @@ namespace WindowsFormsApp1
             this.ExprLabel.TabIndex = 5;
             this.ExprLabel.Text = "Expiration: ";
             // 
-            // scriptStatusButton
-            // 
-            this.scriptStatusButton.Location = new System.Drawing.Point(539, 401);
-            this.scriptStatusButton.Name = "scriptStatusButton";
-            this.scriptStatusButton.Size = new System.Drawing.Size(96, 28);
-            this.scriptStatusButton.TabIndex = 8;
-            this.scriptStatusButton.Text = "Script Status";
-            this.scriptStatusButton.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(665, 401);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(114, 27);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "Run Script";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(127, 374);
@@ -231,8 +211,6 @@ namespace WindowsFormsApp1
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.scriptStatusButton);
             this.Controls.Add(this.productLabel);
             this.Controls.Add(this.inletLabel);
             this.Controls.Add(this.PortLabel);
@@ -263,8 +241,6 @@ namespace WindowsFormsApp1
         private Label RemainderLabel;
         private Label LotNumberLabel;
         private Label ExprLabel;
-        private Button scriptStatusButton;
-        private Button button3;
         private PictureBox pictureBox1;
         private PictureBox pictureBox2;
         private TextBox textBox3;
