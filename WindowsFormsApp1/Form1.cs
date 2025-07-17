@@ -25,10 +25,8 @@ namespace WindowsFormsApp1
 
         public Form1()
         {
-            // this.FormClosed += OnFormClosing();
             InitializeComponent();
-            //scriptStatusButton.Click += new EventHandler(pythonProcessStatus);
-            //button3.Click += new EventHandler(StartOcrProcessIfNeeded);
+           
             portNumberLabel.Font = new Font(portNumberLabel.Font, FontStyle.Bold);
             pictureBox1.Image = System.Drawing.Image.FromFile(@"C:\Users\ruanj5\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\cameraLogo.png");
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -141,16 +139,6 @@ namespace WindowsFormsApp1
                                   "<scannerID>1</scannerID>" +
                       "</inArgs>";
                 cCoreScannerClass.ExecCommand(3000, ref inXML, out outXML, out status);
-
-                if (status != 0)
-                {
-                    MessageBox.Show("Enable Photo Mode Failed");
-                    return;
-                }
-                else
-                {
-                    MessageBox.Show("Photo mode enabled.");
-                }
             }
             catch (Exception exp)
             {
@@ -171,18 +159,6 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void pythonProcessStatus(object sender, EventArgs e)
-        {
-            if (python != null && !python.HasExited)
-            {
-                MessageBox.Show("OCR process is running.");
-            }
-            else
-            {
-                MessageBox.Show("OCR process is not running.");
-            }
-        }
-
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             
@@ -194,10 +170,7 @@ namespace WindowsFormsApp1
             char a = ' ';
             char b = ' ';
             char c = ' ';
-            if (!string.IsNullOrWhiteSpace(e.Data))
-            {
-                //MessageBox.Show("Python Output: " + e.Data);
-            }
+          
             if (e.Data != null && e.Data.Length >= 3)
             {
                 string result = e.Data.ToUpper();
@@ -228,7 +201,7 @@ namespace WindowsFormsApp1
         }
         private string HexToAscii(string hex)
         {
-            if (string.IsNullOrWhiteSpace(hex))
+            if (string.IsNullOrWhiteSpace(hex)) 
                 return string.Empty;
 
             var sb = new System.Text.StringBuilder();
@@ -275,21 +248,15 @@ namespace WindowsFormsApp1
             {
                 form.textBox1.Text = barcodeValue.Substring(26);
             }));
-            MessageBox.Show("Barcode: " + barcodeValue);
+            form.BeginInvoke((Action)(() =>
+            { 
+                string formattedData = $"{barcodeValue.Substring(20, 2)}-{barcodeValue.Substring(18, 2)}-{barcodeValue.Substring(22, 2)}"; // MM-DD-Y
+                form.textBox2.Text = formattedData;
+            }));
 
         }   
         private void OnImageEvent(short eventType, int size, short imageFormat, ref object pimageData, ref string pscanData)
         { 
-            /*
-            MessageBox.Show("Image Event Triggered");
-            if (python != null && !python.HasExited)
-            {
-                MessageBox.Show("OCR process is running.");
-            }
-            else
-            {
-                MessageBox.Show("OCR process is not running.");
-            }*/
             
             byte[] byteArray = pimageData as byte[];
 
